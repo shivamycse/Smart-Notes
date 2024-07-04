@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Notes</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e9f5f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #009688;
+            margin-top: 20px;
+            font-size: 2.5rem;
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0.1, 0.1, 0.1, 0.1);
+            margin-top: 20px;
+            max-width: 400px;
+            width: 100%;
+        }
+        .input-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 1rem;
+        }
+        .input-group input[type="file"], 
+        .input-group input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #009688;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #00796b;
+        }
+        #notes {
+            margin-top: 20px;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0.1, 0.1, 0.1, 0.1);
+            max-width: 800px;
+            width: 90%;
+            word-wrap: break-word;
+        }
+        .benefits, .feature {
+            text-align: left;
+            margin-top: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 90%;
+        }
+        .benefits h2, .feature h3 {
+            color: #009688;
+            margin-top: 0;
+        }
+        .benefits ul, .feature ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        .feature p {
+            line-height: 1.6;
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .container, form, .benefits, .feature {
+                padding: 15px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Convert PDF to Useful Notes</h1>
+    <div class="container">
+        <p>Welcome to our PDF to Notes tool! This tool helps you convert your PDF documents into detailed notes, making it easier to understand the key points and overall content of your PDF. Instead of going through lengthy documents, you can now read detailed notes that capture the essence of the material.</p>
+        <center>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="input-group">
+                <label for="fileInput">Upload a PDF File:</label>
+                <input type="file" id="fileInput" name="file">
+            </div>
+            <div class="input-group">
+                <label for="urlInput">Or Enter PDF URL (optional):</label>
+                <input type="url" id="urlInput" name="url" placeholder="https://example.com">
+            </div>
+            <button type="submit">Convert</button>
+        </form>
+    </center>
+        <h2> Output: </h2>
+        <div id="notes"></div>
+    </div>
+    
+    <div class="benefits container">
+        <h2>Benefits of Using PDF to Notes Tool</h2>
+        <ul>
+            <li>Quickly summarize lengthy PDF documents into detailed key points.</li>
+            <li>Save time by reading detailed notes instead of the entire document.</li>
+            <li>Improve understanding by focusing on the main ideas with expanded content.</li>
+            <li>Enhance productivity with comprehensive, easy-to-digest information.</li>
+            <li>Convenient for students, professionals, and anyone needing in-depth insights from large documents.</li>
+        </ul>
+    </div>
+
+    <div class="feature container">
+        <h3>Features of Our PDF to Notes Tool</h3>
+        <p>Our tool offers several features to enhance your experience:</p>
+        <ul>
+            <li><strong>PDF Upload:</strong> Easily upload your PDF files for conversion.</li>
+            <li><strong>URL Support:</strong> Optionally enter a URL to convert PDFs directly from the web.</li>
+            <li><strong>Detailed Notes:</strong> Receive detailed notes summarizing your PDF's content.</li>
+            <li><strong>Customizable Output:</strong> Adjust settings to tailor notes to your specific needs.</li>
+        </ul>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const urlInput = document.getElementById('urlInput');
+            const formData = new FormData();
+
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            if (urlInput.value.trim() !== '') {
+                formData.append('url', urlInput.value.trim());
+            }
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+            if (data.notes) {
+                const notesHTML = data.notes.split('\n').map(note => `<p>${note}</p>`).join('');
+                document.getElementById('notes').innerHTML = notesHTML;
+            } else {
+                document.getElementById('notes').innerText = 'Error: ' + data.error;
+            }
+        });
+    </script>
+</body>
+</html>
